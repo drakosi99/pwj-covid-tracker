@@ -9,29 +9,51 @@ var map;
 var infoWindow;
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 4
+        center: { lat: 30, lng: 0 },
+        zoom: 2,
+        styles: mapStyle
     });
     infoWindow = new google.maps.InfoWindow();
 }
 
 const getCountryData = () => {
     fetch("https://corona.lmao.ninja/v2/countries")
-    .then((response)=>{
-        return response.json()
-    }).then((data)=>{
-        showDataOnMap(data);
-        showDataInTable(data);
-    })
+        .then((response) => {
+            return response.json()
+        }).then((data) => {
+            showDataOnMap(data);
+            showDataInTable(data);
+        })
 }
 
+const buildChart = () => {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'My First dataset',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: [0, 10, 5, 2, 20, 30, 45]
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+}
 
 const openInfoWindow = () => {
     infoWindow.open(map);
 }
 
 const showDataOnMap = (data) => {
-    data.map((country)=>{
+    data.map((country) => {
         let countryCenter = {
             lat: country.countryInfo.lat,
             lng: country.countryInfo.long
@@ -71,11 +93,11 @@ const showDataOnMap = (data) => {
             content: html,
             position: countryCircle.center
         });
-        google.maps.event.addListener(countryCircle, 'mouseover', function() {
+        google.maps.event.addListener(countryCircle, 'mouseover', function () {
             infoWindow.open(map);
         });
 
-        google.maps.event.addListener(countryCircle, 'mouseout', function(){
+        google.maps.event.addListener(countryCircle, 'mouseout', function () {
             infoWindow.close();
         })
 
@@ -85,7 +107,7 @@ const showDataOnMap = (data) => {
 
 const showDataInTable = (data) => {
     var html = '';
-    data.forEach((country)=>{
+    data.forEach((country) => {
         html += `
         <tr>
             <td>${country.country}</td>
